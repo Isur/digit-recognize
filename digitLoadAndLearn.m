@@ -1,5 +1,5 @@
 clear; clc;
-mnist = fullfile(toolboxdir('vision'), 'visiondata','digits','mnist');
+mnist = fullfile('mnist');
 
 allImages = imageDatastore(mnist,   'IncludeSubfolders', true, 'LabelSource', 'foldernames');
 

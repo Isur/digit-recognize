@@ -1,7 +1,4 @@
 # Digit Recognize
-## Requirements
-MNIST dataset in toolbox/visiondata/digits.
-
 ## Usage
 Run digitLoadAndLearn then run digitClassiifier.
 
