@@ -1,9 +1,15 @@
 clear; clc;
-syntheticDir   = fullfile(toolboxdir('vision'), 'visiondata','digits','synthetic');
-handwrittenDir = fullfile(toolboxdir('vision'), 'visiondata','digits','handwritten');
+mnist = fullfile(toolboxdir('vision'), 'visiondata','digits','mnist');
 
-trainingSet = imageDatastore(syntheticDir,   'IncludeSubfolders', true, 'LabelSource', 'foldernames');
-testSet     = imageDatastore(handwrittenDir, 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
+allImages = imageDatastore(mnist,   'IncludeSubfolders', true, 'LabelSource', 'foldernames');
+
+shuffled = shuffle(allImages);
+
+trainingSet = subset(shuffled,1:7000);
+testSet = subset(shuffled,7001:10000);
+
+%trainingSet = imageDatastore(mnist,   'IncludeSubfolders', true, 'LabelSource', 'foldernames');
+%testSet     = imageDatastore(handwrittenDir, 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
 
 img = readimage(trainingSet, 206);
 
@@ -13,16 +19,19 @@ cellSize = [4 4];
 hogFeatureSize = length(hog_4x4);
 numImages = numel(trainingSet.Files);
 trainingFeatures = zeros(numImages, hogFeatureSize, 'single');
-
+w = waitbar(0, 'Wait...', 'Name', 'Training - Extracting HOG feature');
 for i = 1:numImages
+    clc;
+    wt = sprintf('%i of %i', i, numImages);
+    waitbar(i/numImages, w, wt);
     img = readimage(trainingSet, i);
-    
-    img = rgb2gray(img);
+    img = im2gray(img);
     
     img = imbinarize(img);
     
     trainingFeatures(i, :) = extractHOGFeatures(img, 'CellSize', cellSize);  
 end
+close(w)
 
 trainingLabels = trainingSet.Labels;
 
@@ -55,13 +64,18 @@ function [features, setLabels] = helperExtractHOGFeaturesFromImageSet(imds, hogF
 setLabels = imds.Labels;
 numImages = numel(imds.Files);
 features  = zeros(numImages, hogFeatureSize, 'single');
-
+w2 = waitbar(0, 'Wait...', 'Name', 'Test - Extracting HOG feature');
 for j = 1:numImages
+    clc;
+    wt = sprintf('%i of %i', j, numImages);
+    waitbar(j/numImages, w2, wt);
+    
     img = readimage(imds, j);
-    img = rgb2gray(img);
+    img = im2gray(img);
     
     img = imbinarize(img);
     
     features(j, :) = extractHOGFeatures(img,'CellSize',cellSize);
 end
+close(w2)
 end
