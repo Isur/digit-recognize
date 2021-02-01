@@ -8,9 +8,6 @@ shuffled = shuffle(allImages);
 trainingSet = subset(shuffled,1:7000);
 testSet = subset(shuffled,7001:10000);
 
-%trainingSet = imageDatastore(mnist,   'IncludeSubfolders', true, 'LabelSource', 'foldernames');
-%testSet     = imageDatastore(handwrittenDir, 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
-
 img = readimage(trainingSet, 206);
 
 [hog_4x4, vis4x4] = extractHOGFeatures(img,'CellSize',[4 4]);
